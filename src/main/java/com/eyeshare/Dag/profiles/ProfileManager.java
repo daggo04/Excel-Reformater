@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * Singleton class
  */
 public class ProfileManager {
-    private static final String APP_DIR = System.getProperty("user.dir");
+    private static final String APP_DIR = System.getProperty("user.home") + "/.Excel_Reformatter_Resources";
     private static final String PROFILES_DIR = APP_DIR + "/profiles";
     private static final String TEMPLATES_DIR = APP_DIR + "/templates";
     private List<String> profileNames;
@@ -251,6 +251,7 @@ public class ProfileManager {
                 return;
             }
             profileNames = Files.list(profilesDirectory)
+                    .filter(path -> path.getFileName().toString().endsWith(".json"))
                     .map(path -> path.getFileName().toString().replace(".json", ""))
                     .collect(Collectors.toList());
             System.out.println("Loaded profile names: " + profileNames);

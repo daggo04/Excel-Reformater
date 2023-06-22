@@ -14,6 +14,11 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+
 /**
  * Created by Dag O.B.H on 2023.18.04.
  * <p>This class is responsible for handling the Excel files.</p>
@@ -44,26 +49,22 @@ public class ExcelHandler {
      * @throws IOException if the file cannot be found.
      */
     public ExcelHandler(String sourceFilePath, String templateFilePath) throws IOException {
-            try {
-        FileInputStream sourceInputStream = new FileInputStream(sourceFilePath);
-        String absoluteTemplatePath = System.getProperty("user.dir") + templateFilePath;
-        FileInputStream templateInputStream = new FileInputStream(absoluteTemplatePath);
+        try {
+            Path sourcePath = Paths.get(sourceFilePath);
+            Path templatePath = Paths.get(System.getProperty("user.home"), ".Excel_Reformatter_Resources", templateFilePath);
 
-        this.source = WorkbookFactory.create(sourceInputStream);
-        this.template = WorkbookFactory.create(templateInputStream);
+            this.source = WorkbookFactory.create(Files.newInputStream(sourcePath));
+            this.template = WorkbookFactory.create(Files.newInputStream(templatePath));
 
-        // Initialize the output workbook as a copy of the template workbook
-        ByteArrayOutputStream templateBytes = new ByteArrayOutputStream();
-        this.template.write(templateBytes);
-        ByteArrayInputStream outputBytes = new ByteArrayInputStream(templateBytes.toByteArray());
-        this.output = WorkbookFactory.create(outputBytes);
-
-        sourceInputStream.close();
-        templateInputStream.close();
-    } catch (IOException e) {
-        e.printStackTrace();
+            // Initialize the output workbook as a copy of the template workbook
+            ByteArrayOutputStream templateBytes = new ByteArrayOutputStream();
+            this.template.write(templateBytes);
+            ByteArrayInputStream outputBytes = new ByteArrayInputStream(templateBytes.toByteArray());
+            this.output = WorkbookFactory.create(outputBytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-}
 
     /**
      * Constructor for a new ExcelHandler object.

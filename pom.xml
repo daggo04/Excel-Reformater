@@ -4,7 +4,6 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <!-- Meta Project Properties-->
   <groupId>com.eyeshare.Dag</groupId>
   <artifactId>excelreformatter</artifactId>
   <packaging>jar</packaging>
@@ -13,134 +12,74 @@
   <description>Reformats Excel files to a profiled format</description>
 
   <properties>
-      <!-- General project properties -->
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <java.version>17</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>17</java.version>
 
-              <!-- Properties required for packaging application as JAR and installer -->
-        <app.main.class>${project.groupId}.Main</app.main.class> <!-- name of main class -->
-        <app.vendor>Dag Himle</app.vendor> <!-- replace with your name -->
-        <app.version>1.0.0</app.version> <!-- version displayed in "about" -->
-        <app.installer.macosx.type>dmg</app.installer.macosx.type> <!-- dmg, pkg -->
-        <app.installer.windows.type>msi</app.installer.windows.type> <!-- msi, exe -->
+        <app.main.class>${project.groupId}.Main</app.main.class>
+        <app.vendor>Dag Himle</app.vendor>
+        <app.version>BETA 1.0.0</app.version>
+        <app.installer.macosx.type>dmg</app.installer.macosx.type>
+        <app.installer.windows.type>msi</app.installer.windows.type>
         <app.macosx.icon.path>src/main/logo/macosx/logo.icns</app.macosx.icon.path>
         <app.windows.icon.path>src/main/logo/windows/logo.ico</app.windows.icon.path>
 
-      <!-- Library and plugin versions -->
-      <junit.version>5.9.1</junit.version>
-      <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
-      <maven.dependency.plugin.version>3.4.0</maven.dependency.plugin.version>
-      <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
-      <maven.surefire.plugin.version>3.0.0-M5</maven.surefire.plugin.version>
-      <exec.maven.plugin.version>1.6.0</exec.maven.plugin.version>
-      <!-- Computed properties -->
-      <maven.compiler.release>${java.version}</maven.compiler.release>
-  </properties>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
+        <maven-shade-plugin.version>3.5.0</maven-shade-plugin.version>
+        <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
+    </properties>
 
 
-  <url>http://maven.apache.org</url>
   <dependencies>
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-
-    <!-- Apache POI for Excel handling -->
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
       <version>5.2.3</version>
     </dependency>
-
-    <!-- Google Gson for profile saving loading-->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.10.1</version>
     </dependency>
-
   </dependencies>
+
   <build>
     <plugins>
-        <!-- Other plugins -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven.compiler.plugin.version}</version>
+        <configuration>
+          <release>${maven.compiler.release}</release>
+        </configuration>
+      </plugin>
 
-        <!-- Create a custom Java runtime image using the jlink plugin -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jlink-plugin</artifactId>
-          <version>3.1.0</version>
-          <extensions>true</extensions>
-          <configuration>
-              <launcher>excel-reformatter=${project.groupId}.${project.artifactId}/${app.main.class}</launcher>
-              <modulePaths>
-                  <modulePath>${project.build.directory}/jlinkbase/modules</modulePath>
-              </modulePaths>
-              <addOptions>
-                  <option>--strip-debug</option>
-                  <option>--no-header-files</option>
-                  <option>--no-man-pages</option>
-                  <option>--bind-services</option>
-              </addOptions>
-              <jlinkwrapper>
-                  <wrappers>
-                      <wrapper>
-                          <moduleName>commons.math3</moduleName>
-                          <automaticModuleName>commons.math3</automaticModuleName>
-                      </wrapper>
-                  </wrappers>
-              </jlinkwrapper>
-          </configuration>
-          <executions>
-              <execution>
-                  <id>create-runtime-image</id>
-                  <phase>package</phase>
-                  <goals>
-                      <goal>jlink</goal>
-                  </goals>
-              </execution>
-          </executions>
-        </plugin>
-        
-        
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>exec-maven-plugin</artifactId>
-          <version>3.0.0</version>
-          <executions>
-              <execution>
-                  <id>create-installers</id>
-                  <phase>package</phase>
-                  <goals>
-                      <goal>exec</goal>
-                  </goals>
-                  <configuration>
-                      <executable>jpackage</executable>
-                      <arguments>
-                          <argument>--type</argument>
-                          <argument>${app.installer.windows.type}</argument>
-                          <argument>--name</argument>
-                          <argument>excel-reformatter</argument>
-                          <argument>--app-version</argument>
-                          <argument>${app.version}</argument>
-                          <argument>--input</argument>
-                          <argument>${project.build.directory}/jlink-image</argument>
-                          <argument>--output</argument>
-                          <argument>${project.build.directory}/jpackage</argument>
-                          <argument>--main-jar</argument>
-                          <argument>${project.build.finalName}.jar</argument>
-                          <argument>--main-class</argument>
-                          <argument>${app.main.class}</argument>
-                          <argument>--icon</argument>
-                          <argument>${app.windows.icon.path}</argument>
-                      </arguments>
-                  </configuration>
-              </execution>
-          </executions>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven-shade-plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>${app.main.class}</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
-
 </project>
