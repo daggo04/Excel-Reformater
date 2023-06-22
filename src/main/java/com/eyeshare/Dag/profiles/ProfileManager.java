@@ -25,7 +25,9 @@ import java.util.stream.Collectors;
  * Singleton class
  */
 public class ProfileManager {
-    private static final String PROFILES_DIR = "src/main/resources/profiles";
+    private static final String APP_DIR = System.getProperty("user.dir");
+    private static final String PROFILES_DIR = APP_DIR + "/profiles";
+    private static final String TEMPLATES_DIR = APP_DIR + "/templates";
     private List<String> profileNames;
     private Gson gson;
 
@@ -36,6 +38,9 @@ public class ProfileManager {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Operation.class, new OperationDeserializer());
         this.gson = gsonBuilder.create();
+
+        createDirectoryIfNotExists(PROFILES_DIR);
+        createDirectoryIfNotExists(TEMPLATES_DIR);
         
         loadProfileNames();
     }
@@ -71,9 +76,11 @@ public class ProfileManager {
             return profile;
         } catch (FileNotFoundException e) {
             System.out.println("Profile file not found: " + name);
+            e.printStackTrace();  // Print stack trace for FileNotFoundException
             return null;
         } catch (IOException e) {
             System.out.println("Error reading profile file: " + e.getMessage());
+            e.printStackTrace();  // Print stack trace for IOException
             return null;
         }
     }
@@ -222,27 +229,45 @@ public class ProfileManager {
      */
     public List<String> getAvailableTemplates() {
         List<String> templates = new ArrayList<>();
-        try {
-            URI templatesDirURI = getClass().getResource("/templates").toURI();
-            Path templatesPath = Paths.get(templatesDirURI);
-            Files.newDirectoryStream(templatesPath, path -> path.toString().endsWith(".xls") || path.toString().endsWith(".xlsx"))
-                    .forEach(path -> templates.add(path.getFileName().toString()));
-        } catch (IOException | URISyntaxException e) {
-            System.out.println("Error reading templates directory: " + e.getMessage());
+        File templatesDir = new File(TEMPLATES_DIR);
+        if (!templatesDir.exists()) {
+            templatesDir.mkdirs();
         }
+        for (File file : templatesDir.listFiles()) {
+            String fileName = file.getName();
+            if (fileName.endsWith(".xls") || fileName.endsWith(".xlsx")) {
+                templates.add(fileName);
+            }
+        }
+        System.out.println("Available templates: " + templates);
         return templates;
     }
     
     private void loadProfileNames() {
         try {
-            Files.createDirectories(Paths.get(PROFILES_DIR));
-            profileNames = Files.list(Paths.get(PROFILES_DIR))
+            Path profilesDirectory = Paths.get(PROFILES_DIR);
+            if (!Files.exists(profilesDirectory)) {
+                System.out.println("Profiles directory does not exist: " + PROFILES_DIR);
+                return;
+            }
+            profileNames = Files.list(profilesDirectory)
                     .map(path -> path.getFileName().toString().replace(".json", ""))
                     .collect(Collectors.toList());
+            System.out.println("Loaded profile names: " + profileNames);
         } catch (IOException e) {
             System.out.println("Error reading profiles directory: " + e.getMessage());
+            e.printStackTrace();
         }
     }
+
+     private void createDirectoryIfNotExists(String directoryPath) {
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+    }
+
+    
 
     private void saveProfile(Profile profile) {
         try {
@@ -258,6 +283,4 @@ public class ProfileManager {
     private String getProfilePath(String name) {
         return PROFILES_DIR + File.separator + name + ".json";
     }
-
-
 }

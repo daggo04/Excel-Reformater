@@ -16,3 +16,4 @@ test_output/
 
 ### VS Code ###
 .vscode/
+src/main/resources/.DS_Store

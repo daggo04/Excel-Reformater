@@ -32,6 +32,12 @@ public class ExcelReformatter extends ExcelHandler {
             System.out.println("Parameters: " + parameters);
     
             switch (type) {
+                case COPY_ROWS:
+                    copyRows(((Double) parameters.get("srcSheet")).intValue(),
+                    ((Double) parameters.get("dstSheet")).intValue(),
+                    ((Double) parameters.get("startRow")).intValue(),
+                    ((Double) parameters.get("numRows")).intValue());
+                    break;
                 case COPY_COLUMN:
                     copyColumn(((Double) parameters.get("srcSheet")).intValue(),
                     ((Double) parameters.get("srcCol")).intValue(),
@@ -51,6 +57,7 @@ public class ExcelReformatter extends ExcelHandler {
                         integerMap.put(((Number) entry.getKey()).intValue(), ((Number) entry.getValue()).intValue());
                     }
                 }
+
                 
                 copySplitRow(((Number) parameters.get("srcSheet")).intValue(),
                         ((Number) parameters.get("dstSheet")).intValue(),

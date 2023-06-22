@@ -46,7 +46,9 @@ public class ExcelHandler {
     public ExcelHandler(String sourceFilePath, String templateFilePath) throws IOException {
             try {
         FileInputStream sourceInputStream = new FileInputStream(sourceFilePath);
-        FileInputStream templateInputStream = new FileInputStream(templateFilePath);
+        String absoluteTemplatePath = System.getProperty("user.dir") + templateFilePath;
+        FileInputStream templateInputStream = new FileInputStream(absoluteTemplatePath);
+
         this.source = WorkbookFactory.create(sourceInputStream);
         this.template = WorkbookFactory.create(templateInputStream);
 
