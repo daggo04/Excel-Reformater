@@ -20,6 +20,7 @@ public class Main {
             e.printStackTrace();
             System.exit(1);
         }
+        System.out.println("Resources extracted successfully.");
         
 
         ProfileManager profileManager = new ProfileManager();
