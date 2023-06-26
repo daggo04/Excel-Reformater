@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-
+      - main
 jobs:
   build_windows:
     runs-on: windows-latest
@@ -42,7 +42,7 @@ jobs:
       with:
         name: installer-windows
         path: ./*.exe
-        
+
   build_macos:
     runs-on: macos-latest
 
