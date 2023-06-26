@@ -35,14 +35,14 @@ jobs:
 
     - name: Create Installer with jpackage
       run: |
-        $JAVA_HOME/bin/jpackage --name excelreformatter --input target --main-jar excelreformatter-1.0-SNAPSHOT.jar --main-class com.eyeshare.Dag.Main --runtime-image jre --type msi --icon src/main/logo/windows/logo.ico
+        $JAVA_HOME/bin/jpackage --name excelreformatter --input target --main-jar excelreformatter-1.0-SNAPSHOT.jar --main-class com.eyeshare.Dag.Main --runtime-image jre --type exe --icon src/main/logo/windows/logo.ico
 
     - name: Upload Installer
       uses: actions/upload-artifact@v2
       with:
         name: installer-windows
-        path: ./*.msi
-
+        path: ./*.exe
+        
   build_macos:
     runs-on: macos-latest
 
