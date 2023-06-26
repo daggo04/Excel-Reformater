@@ -88,7 +88,7 @@ jobs:
 
     - name: Create Installer with jpackage
       run: |
-        $JAVA_HOME/bin/jpackage --name excelreformatter --input target --main-jar excelreformatter-1.0-SNAPSHOT.jar --main-class com.eyeshare.Dag.Main --type dmg --icon src/main/logo/macosx/logo.icn --resource-dir resources
+        $JAVA_HOME/bin/jpackage --name excelreformatter --input target --main-jar excelreformatter-1.0-SNAPSHOT.jar --main-class com.eyeshare.Dag.Main --type dmg --icon src/main/logo/macosx/logo.icns --resource-dir resources
 
     - name: Upload Installer
       uses: actions/upload-artifact@v2
