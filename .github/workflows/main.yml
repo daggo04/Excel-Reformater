@@ -30,8 +30,10 @@ jobs:
       run: mvn -B package --file pom.xml
 
     - name: Build custom JRE with jlink
+      shell: bash
       run: |
-        $JAVA_HOME/bin/jlink --no-header-files --no-man-pages --add-modules $(jdeps --print-module-deps target/*.jar) --output jre
+        $JAVA_HOME/bin/jlink --no-header-files --no-man-pages --add-modules ALL-MODULE-PATH --output jre
+
 
     - name: Create Installer with jpackage
       run: |
@@ -68,8 +70,10 @@ jobs:
       run: mvn -B package --file pom.xml
 
     - name: Build custom JRE with jlink
+      shell: bash
       run: |
-        $JAVA_HOME/bin/jlink --no-header-files --no-man-pages --add-modules $(jdeps --print-module-deps target/*.jar) --output jre
+        $JAVA_HOME/bin/jlink --no-header-files --no-man-pages --add-modules ALL-MODULE-PATH --output jre
+
 
     - name: Create Installer with jpackage
       run: |
