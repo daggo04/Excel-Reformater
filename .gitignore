@@ -16,4 +16,13 @@ test_output/
 
 ### VS Code ###
 .vscode/
-src/main/resources/.DS_Store
+
+### MACOS ###
+.DS_Store
+
+### Intellij ###
+.idea/
+*.iml
+*.ipr
+*.iws
+.idea_modules/
