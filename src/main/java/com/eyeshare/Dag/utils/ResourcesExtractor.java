@@ -9,6 +9,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +21,7 @@ import java.util.jar.JarFile;
 public class ResourcesExtractor {
 
     public void extractResources() throws IOException {
+        System.out.println("Inside extractResources");
         extractDirectory("/templates");
         extractDirectory("/profiles");
     }
@@ -29,10 +31,12 @@ public class ResourcesExtractor {
         if (!outDir.exists()) {
             outDir.mkdirs();
             String[] resources = getResourceListing(getClass(), directory);
+            System.out.println("Resources in " + directory + ": " + Arrays.toString(resources));
             for (String resource : resources) {
                 File outFile = new File(outDir, resource);
                 if (!outFile.exists()) {
                     InputStream inStream = getClass().getResourceAsStream(directory + "/" + resource);
+                    System.out.println("InputStream for " + directory + "/" + resource + ": " + inStream);
                     Files.copy(inStream, outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 }
             }
@@ -50,6 +54,7 @@ public class ResourcesExtractor {
      */
     private String[] getResourceListing(Class<?> clazz, String path) throws IOException {
         URL dirURL = clazz.getResource(path);
+        System.out.println("Directory URL: " + dirURL);
         if (dirURL != null && dirURL.getProtocol().equals("file")) {
             /* A file path: easy enough */
             try {
@@ -70,17 +75,21 @@ public class ResourcesExtractor {
         if (dirURL.getProtocol().equals("jar")) {
             /* A JAR path */
             String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
+            System.out.println("Jar path: " + jarPath);
             JarFile jar = new JarFile(URLDecoder.decode(jarPath, StandardCharsets.UTF_8));
             Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
             Set<String> result = new HashSet<>(); //avoid duplicates in case it is a subdirectory
             while(entries.hasMoreElements()) {
                 String name = entries.nextElement().getName();
+                System.out.println("Jar entry name: " + name);
                 if (name.startsWith(path)) { //filter according to the path
                     String entry = name.substring(path.length());
                     result.add(entry);
                 }
             }
+            System.out.println("Resource entries in " + path + ": " + result);
             return result.toArray(new String[0]);
+
         }
 
         throw new UnsupportedOperationException("Cannot list files for URL " + dirURL);

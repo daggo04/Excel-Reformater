@@ -20,6 +20,7 @@ public class Main {
             e.printStackTrace();
             System.exit(1);
         }
+        
 
         ProfileManager profileManager = new ProfileManager();
 
