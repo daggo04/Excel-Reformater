@@ -113,9 +113,14 @@ public class ResourcesExtractor {
             Set<String> result = new HashSet<>(); //avoid duplicates in case it is a subdirectory
             while(entries.hasMoreElements()) {
                 String name = entries.nextElement().getName();
-                System.out.println("Jar entry name: " + name);
                 if (name.startsWith(path)) { //filter according to the path
+                    System.out.println("Jar entry name: " + name);
                     String entry = name.substring(path.length());
+                    int checkSubdir = entry.indexOf("/");
+                    if (checkSubdir >= 0) {
+                        // if it is a subdirectory, we just continue with the next iteration
+                        continue;
+                    }
                     result.add(entry);
                 }
             }
