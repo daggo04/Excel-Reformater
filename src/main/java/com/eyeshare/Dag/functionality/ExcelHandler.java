@@ -1,5 +1,6 @@
 package com.eyeshare.Dag.functionality;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -127,7 +128,7 @@ public class ExcelHandler {
     public void copySplitRow(int srcSheet, int dstSheet, int startRow, Map<Integer, Integer> colMap, boolean includeHeaders, int headerCol) {
         Sheet sourceSheet = source.getSheetAt(srcSheet);
         Sheet targetSheet = output.getSheetAt(dstSheet);
-    
+
         int lastSourceRow = sourceSheet.getLastRowNum();
         int targetRowIdx = startRow;
 
@@ -143,35 +144,71 @@ public class ExcelHandler {
             }
         }
 
-        for (int i = startRow; i < lastSourceRow; i++) {
+        for (int i = startRow; i <= lastSourceRow; i++) {
             Row sourceRow = sourceSheet.getRow(i);
+            if (areNextRowsEmpty(sourceSheet, i, 10)) break;
             if (sourceRow != null) {
                 for (int j = 0; j < splits; j++) {
-                    Row targetRow = targetSheet.createRow(targetRowIdx);
-                    for (int key : invertedColMap.keySet()) {
-                        if (key == keyToSplit) {
-                            Cell sourceCell = sourceRow.getCell(invertedColMap.get(key).get(j));
-                            Cell targetCell = targetRow.createCell(key);
-                            copyCell(sourceCell, targetCell);
-                            if (includeHeaders) {
-                                Cell headerCell = sourceSheet.getRow(0).getCell(invertedColMap.get(key).get(j));
-                                Cell targetHeaderCell = targetRow.createCell(headerCol);
-                                copyCell(headerCell, targetHeaderCell);
-                            }
+                    // Break loop if it exceeds the last row index or if the next rows are empty
 
+                    Row targetRow = targetSheet.createRow(targetRowIdx++);
+                    for (int key : invertedColMap.keySet()) {
+                        Cell sourceCell;
+                        if (key == keyToSplit) {
+                            sourceCell = sourceRow.getCell(invertedColMap.get(key).get(Math.min(j, invertedColMap.get(key).size() - 1)));
                         } else {
-                            Cell sourceCell = sourceRow.getCell(key);
-                            Cell targetCell = targetRow.createCell(invertedColMap.get(key).get(0));
-                            copyCell(sourceCell, targetCell);
-                            }
+                            sourceCell = sourceRow.getCell(invertedColMap.get(key).get(0));
                         }
-                        targetRowIdx++;
+                        Cell targetCell = targetRow.createCell(key);
+                        copyCell(sourceCell, targetCell);
+
+                        // Copy headers
+                        if (includeHeaders && i <= lastSourceRow) {
+                            Cell headerCell = sourceSheet.getRow(0).getCell(invertedColMap.get(key).get(Math.min(j, invertedColMap.get(key).size() - 1)));
+                            Cell targetHeaderCell = targetRow.createCell(headerCol);
+                            copyCell(headerCell, targetHeaderCell);
+                        }
                     }
                 }
             }
         }
+    }
+
+
+
     
+
+
     //Helper methods
+
+    private boolean isRowEmpty(Row row) {
+        if (row == null) {
+            return true;
+        }
+        if (row.getLastCellNum() <= 0) {
+            return true;
+        }
+        for (int cellNum = row.getFirstCellNum(); cellNum < row.getLastCellNum(); cellNum++) {
+            Cell cell = row.getCell(cellNum);
+            if (cell != null && cell.getCellType() != CellType.BLANK && !cell.toString().trim().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private boolean areNextRowsEmpty(Sheet sheet, int startRow, int n) {
+        for (int i = startRow; i < startRow + n && i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (!isRowEmpty(row)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     private void copyCell(Cell sourceCell, Cell destinationCell) {
         if (sourceCell == null) {
         // If the source cell is null, set the target cell to blank

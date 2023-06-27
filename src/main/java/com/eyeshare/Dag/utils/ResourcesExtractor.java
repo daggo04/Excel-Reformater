@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -26,30 +27,38 @@ import java.util.jar.JarFile;
 public class ResourcesExtractor {
 
     private PrintWriter printWriter;
+    public boolean createLog;
 
-    public ResourcesExtractor() throws IOException {
+    public ResourcesExtractor(boolean createLog) throws IOException {
         File logDirectory = new File(System.getProperty("user.home") + "/.Excel_Reformatter_Resources");
         if (!logDirectory.exists()) {
             if (!logDirectory.mkdirs()) {
                 throw new IOException("Could not create log directory: " + logDirectory);
             }
         }
-        File logFile = new File(logDirectory, "log.txt");
-        this.printWriter = new PrintWriter(new FileOutputStream(logFile, true));
-        System.setOut(new PrintStream(new FileOutputStream(logFile)));
-        System.setErr(new PrintStream(new FileOutputStream(logFile)));
+        if (createLog){
+            File logFile = new File(logDirectory, "log.txt");
+            this.printWriter = new PrintWriter(new FileOutputStream(logFile, true));
+            System.setOut(new PrintStream(new FileOutputStream(logFile)));
+            System.setErr(new PrintStream(new FileOutputStream(logFile)));
+        }
     }
 
 
     public void extractResources() throws IOException {
-        // print the classpath
-        printWriter.println("Classpath: " + System.getProperty("java.class.path"));
+        if (createLog) {
+            // print the java version
+            printWriter.println("Java Version: " + System.getProperty("java.version"));
+            printWriter.println("Extracting Resources...");
+            // print the classpath
+            printWriter.println("Classpath: " + System.getProperty("java.class.path"));
 
-        // print the class loader
-        printWriter.println("Class Loader: " + getClass().getClassLoader());
+            // print the class loader
+            printWriter.println("Class Loader: " + getClass().getClassLoader());
 
-        extractDirectory("/templates");
-        extractDirectory("/profiles");
+            extractDirectory("/templates");
+            extractDirectory("/profiles");
+        }
     }
 
     public void close() {
@@ -60,7 +69,11 @@ public class ResourcesExtractor {
         Files.walk(source).forEach(srcPath -> {
             try {
                 Path destPath = target.resolve(source.relativize(srcPath));
-                Files.copy(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+                try {
+                    Files.copy(srcPath, destPath);
+                } catch (FileAlreadyExistsException e) {
+                    // Ignore
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

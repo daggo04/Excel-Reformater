@@ -7,6 +7,9 @@ import java.awt.*;
 
 public class MainFrame extends JFrame {
     private ProfileManager profileManager;
+    private MainPanel mainPanel;
+    private ProfileManagementPanel profileManagementPanel;
+
 
     public MainFrame(ProfileManager profileManager) {
         this.profileManager = profileManager;
@@ -20,7 +23,7 @@ public class MainFrame extends JFrame {
         getContentPane().setLayout(new CardLayout());
 
         // Add panels
-        MainPanel mainPanel = new MainPanel(profileManager, this);
+        mainPanel = new MainPanel(profileManager, this);
         ProfileManagementPanel profileManagementPanel = new ProfileManagementPanel(profileManager, this);
         getContentPane().add(mainPanel, "mainPanel");
         getContentPane().add(profileManagementPanel, "profileManagementPanel");
@@ -29,5 +32,17 @@ public class MainFrame extends JFrame {
     public void showPanel(String panelName) {
         CardLayout cardLayout = (CardLayout) getContentPane().getLayout();
         cardLayout.show(getContentPane(), panelName);
+    }
+
+    public MainPanel getMainPanel() { 
+        return this.mainPanel;
+    }
+
+    public ProfileManagementPanel getProfileManagementPanel() {
+        return this.profileManagementPanel;
+    }
+
+    public ProfileManager getProfileManager() {
+        return this.profileManager;
     }
 }

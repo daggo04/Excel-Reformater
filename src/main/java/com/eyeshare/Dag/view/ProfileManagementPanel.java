@@ -230,6 +230,7 @@ public class ProfileManagementPanel extends JPanel {
         for (String profileName : profileManager.getProfileNames()) {
             profileComboBox.addItem(profileName);
         }
+        mainFrame.getMainPanel().updateProfileComboBox();
     }
 
     private void createProfile() {
@@ -248,6 +249,8 @@ public class ProfileManagementPanel extends JPanel {
         profileManager.saveProfile(profileName);
         updateProfileComboBox();
         profileComboBox.setSelectedItem(profileName);
+
+        // Updating profile combobox on mainpanel
     }
 
     private void loadProfileFromFile() {
@@ -279,6 +282,7 @@ public class ProfileManagementPanel extends JPanel {
         if (selectedProfileName != null) {
             updateOperationsList(selectedProfileName);
         }
+
     }
 
     private void updateOperationsList(String profileName) {

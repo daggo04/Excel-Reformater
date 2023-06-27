@@ -14,15 +14,16 @@ public class Main {
 
         ResourcesExtractor extractor = null;
         try {
-            extractor = new ResourcesExtractor();
+            extractor = new ResourcesExtractor(true);
             extractor.extractResources();
         } catch (IOException e) {
             System.err.println("Failed to extract resources: " + e.getMessage());
             e.printStackTrace();
             System.exit(1);
         } finally {
-            if (extractor != null)
+            if (extractor != null && extractor.createLog != false) {
                 extractor.close();
+            }
         }
         
 

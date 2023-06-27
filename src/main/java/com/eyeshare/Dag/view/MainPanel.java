@@ -213,7 +213,7 @@ public class MainPanel extends JPanel {
         }
     }
 
-    private void updateProfileComboBox() {
+    public void updateProfileComboBox() {
         // Remove all existing items
         profileComboBox.removeAllItems();
     
@@ -221,7 +221,9 @@ public class MainPanel extends JPanel {
         for (String profileName : profileManager.getProfileNames()) {
             profileComboBox.addItem(profileName);
         }
+        onProfileSelectionChanged();
     }
+
     private void onProfileSelectionChanged() {
         String selectedProfileName = (String) profileComboBox.getSelectedItem();
         if (selectedProfileName != null) {
