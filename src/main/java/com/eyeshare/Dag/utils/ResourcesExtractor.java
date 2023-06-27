@@ -12,6 +12,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -55,24 +56,43 @@ public class ResourcesExtractor {
         printWriter.close();
     }
 
+    public static void copyDirectory(Path source, Path target) throws IOException {
+        Files.walk(source).forEach(srcPath -> {
+            try {
+                Path destPath = target.resolve(source.relativize(srcPath));
+                Files.copy(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
 
     private void extractDirectory(String directory) throws IOException {
         File outDir = new File(System.getProperty("user.home") + "/.Excel_Reformatter_Resources" + directory);
         if (!outDir.exists()) {
             outDir.mkdirs();
         }
-        String[] resources = getResourceListing(getClass(), directory);
-        System.out.println("Resources in " + directory + ": " + Arrays.toString(resources));
-        for (String resource : resources) {
-            File outFile = new File(outDir, resource);
-            System.out.println("Outfile: " + outFile);
-            if (!outFile.exists()) {
-                InputStream inStream = getClass().getResourceAsStream(directory + "/" + resource);
-                System.out.println("InputStream for " + directory + "/" + resource + ": " + inStream);
-                Files.copy(inStream, outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        URL dirUrl = getClass().getResource(directory);
+        if (dirUrl != null && dirUrl.getProtocol().equals("file")) {
+            // Resources are available as plain files, probably running from an IDE
+            File inDir = new File(dirUrl.getPath());
+            copyDirectory(inDir.toPath(), outDir.toPath());
+        } else {
+            // Resources are not available as plain files, probably running from a JAR
+            String[] resources = getResourceListing(getClass(), directory);
+            System.out.println("Resources in " + directory + ": " + Arrays.toString(resources));
+            for (String resource : resources) {
+                File outFile = new File(outDir, resource);
+                System.out.println("Outfile: " + outFile);
+                if (!outFile.exists()) {
+                    InputStream inStream = getClass().getResourceAsStream(directory + "/" + resource);
+                    System.out.println("InputStream for " + directory + "/" + resource + ": " + inStream);
+                    Files.copy(inStream, outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
             }
         }
-    
     }
 
 
