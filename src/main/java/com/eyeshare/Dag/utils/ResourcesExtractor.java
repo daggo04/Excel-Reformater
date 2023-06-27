@@ -74,26 +74,43 @@ public class ResourcesExtractor {
             outDir.mkdirs();
         }
 
-        URL dirUrl = getClass().getResource(directory);
-        if (dirUrl != null && dirUrl.getProtocol().equals("file")) {
-            // Resources are available as plain files, probably running from an IDE
-            File inDir = new File(dirUrl.getPath());
-            copyDirectory(inDir.toPath(), outDir.toPath());
+        String classpath = System.getProperty("java.class.path");
+
+        if (classpath.contains(".app")) {
+            // If running from an .app bundle on MacOS
+            int appIndex = classpath.indexOf(".app");
+            int pathEnd = classpath.indexOf("/", appIndex);
+            String appPath = classpath.substring(0, pathEnd);
+            String resourceDirPath = appPath + "/Contents/app/classes" + directory;
+            File resourceDir = new File(resourceDirPath);
+            copyDirectory(resourceDir.toPath(), outDir.toPath());
         } else {
-            // Resources are not available as plain files, probably running from a JAR
-            String[] resources = getResourceListing(getClass(), directory);
-            System.out.println("Resources in " + directory + ": " + Arrays.toString(resources));
-            for (String resource : resources) {
-                File outFile = new File(outDir, resource);
-                System.out.println("Outfile: " + outFile);
-                if (!outFile.exists()) {
-                    InputStream inStream = getClass().getResourceAsStream(directory + "/" + resource);
-                    System.out.println("InputStream for " + directory + "/" + resource + ": " + inStream);
-                    Files.copy(inStream, outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            URL dirUrl = getClass().getResource(directory);
+            System.out.println("URL for " + directory + ": " + dirUrl);
+
+            if (dirUrl != null && dirUrl.getProtocol().equals("file")) {
+                // Resources are available as plain files, probably running from an IDE
+                File inDir = new File(dirUrl.getPath());
+                copyDirectory(inDir.toPath(), outDir.toPath());
+            } else {
+                // Resources are not available as plain files, probably running from a JAR
+                String[] resources = getResourceListing(getClass(), directory);
+                System.out.println("Resources in " + directory + ": " + Arrays.toString(resources));
+                for (String resource : resources) {
+                    File outFile = new File(outDir, resource);
+                    System.out.println("Outfile: " + outFile);
+                    if (!outFile.exists()) {
+                        InputStream inStream = getClass().getResourceAsStream(directory + "/" + resource);
+                        System.out.println("InputStream for " + directory + "/" + resource + ": " + inStream);
+                        Files.copy(inStream, outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    }
                 }
             }
         }
     }
+
+
+
 
 
     /**

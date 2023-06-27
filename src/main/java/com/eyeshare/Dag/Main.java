@@ -24,7 +24,6 @@ public class Main {
             if (extractor != null)
                 extractor.close();
         }
-        System.out.println("Resources extracted successfully.");
         
 
         ProfileManager profileManager = new ProfileManager();
