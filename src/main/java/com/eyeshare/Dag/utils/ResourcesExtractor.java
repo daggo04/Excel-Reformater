@@ -21,7 +21,6 @@ import java.util.jar.JarFile;
 public class ResourcesExtractor {
 
     public void extractResources() throws IOException {
-        System.out.println("Inside extractResources");
         extractDirectory("/templates");
         extractDirectory("/profiles");
     }

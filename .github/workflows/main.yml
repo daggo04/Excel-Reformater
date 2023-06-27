@@ -38,12 +38,12 @@ jobs:
       shell: bash
       run: |
         mkdir resources
-        cp -R src/main/resources/* resources/
+        cp -R src/main/resources/* app-resources/
 
     - name: Create Installer with jpackage
       shell: bash
       run: |
-        $JAVA_HOME/bin/jpackage --name excelreformatter --input target --main-jar excelreformatter-1.0-SNAPSHOT.jar --main-class com.eyeshare.Dag.Main --runtime-image jre --type exe --icon src/main/logo/windows/logo.ico --resource-dir resources
+        $JAVA_HOME/bin/jpackage --name excelreformatter --input target --main-jar excelreformatter-1.0-SNAPSHOT.jar --main-class com.eyeshare.Dag.Main --runtime-image jre --type exe --icon src/main/logo/windows/logo.ico --resource-dir app-resources
 
     - name: Upload Installer
       uses: actions/upload-artifact@v2
@@ -84,11 +84,11 @@ jobs:
       shell: bash
       run: |
         mkdir resources
-        cp -R src/main/resources/* resources/
+        cp -R src/main/resources/* app-resources/
 
     - name: Create Installer with jpackage
       run: |
-        $JAVA_HOME/bin/jpackage --name excelreformatter --input target --main-jar excelreformatter-1.0-SNAPSHOT.jar --main-class com.eyeshare.Dag.Main --type dmg --icon src/main/logo/macosx/logo.icns --resource-dir resources
+        $JAVA_HOME/bin/jpackage --name excelreformatter --input target --main-jar excelreformatter-1.0-SNAPSHOT.jar --main-class com.eyeshare.Dag.Main --type dmg --icon src/main/logo/macosx/logo.icns --resource-dir app-resources
 
     - name: Upload Installer
       uses: actions/upload-artifact@v2
