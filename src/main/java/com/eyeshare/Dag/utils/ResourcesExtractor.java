@@ -26,11 +26,17 @@ public class ResourcesExtractor {
 
     private PrintWriter printWriter;
 
-    public ResourcesExtractor() throws FileNotFoundException {
-        FileOutputStream fos = new FileOutputStream(new File(System.getProperty("user.home") + "/.Excel_Reformatter_Resources/log.txt"), true);
-        this.printWriter = new PrintWriter(fos);
-        System.setOut(new PrintStream(fos));
-        System.setErr(new PrintStream(fos));
+    public ResourcesExtractor() throws IOException {
+        File logDirectory = new File(System.getProperty("user.home") + "/.Excel_Reformatter_Resources");
+        if (!logDirectory.exists()) {
+            if (!logDirectory.mkdirs()) {
+                throw new IOException("Could not create log directory: " + logDirectory);
+            }
+        }
+        File logFile = new File(logDirectory, "log.txt");
+        this.printWriter = new PrintWriter(new FileOutputStream(logFile, true));
+        System.setOut(new PrintStream(new FileOutputStream(logFile)));
+        System.setErr(new PrintStream(new FileOutputStream(logFile)));
     }
 
 
@@ -54,18 +60,19 @@ public class ResourcesExtractor {
         File outDir = new File(System.getProperty("user.home") + "/.Excel_Reformatter_Resources" + directory);
         if (!outDir.exists()) {
             outDir.mkdirs();
-            String[] resources = getResourceListing(getClass(), directory);
-            System.out.println("Resources in " + directory + ": " + Arrays.toString(resources));
-            for (String resource : resources) {
-                File outFile = new File(outDir, resource);
-                System.out.println("Outfile: " + outFile);
-                if (!outFile.exists()) {
-                    InputStream inStream = getClass().getResourceAsStream(directory + "/" + resource);
-                    System.out.println("InputStream for " + directory + "/" + resource + ": " + inStream);
-                    Files.copy(inStream, outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                }
+        }
+        String[] resources = getResourceListing(getClass(), directory);
+        System.out.println("Resources in " + directory + ": " + Arrays.toString(resources));
+        for (String resource : resources) {
+            File outFile = new File(outDir, resource);
+            System.out.println("Outfile: " + outFile);
+            if (!outFile.exists()) {
+                InputStream inStream = getClass().getResourceAsStream(directory + "/" + resource);
+                System.out.println("InputStream for " + directory + "/" + resource + ": " + inStream);
+                Files.copy(inStream, outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
         }
+    
     }
 
 
