@@ -37,7 +37,7 @@ jobs:
     - name: Copy resources to a separate directory
       shell: bash
       run: |
-        mkdir resources
+        mkdir app-resources
         cp -R src/main/resources/* app-resources/
 
     - name: Create Installer with jpackage
@@ -83,7 +83,7 @@ jobs:
     - name: Copy resources to a separate directory
       shell: bash
       run: |
-        mkdir resources
+        mkdir app-resources
         cp -R src/main/resources/* app-resources/
 
     - name: Create Installer with jpackage
