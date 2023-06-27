@@ -1,8 +1,12 @@
 package com.eyeshare.Dag.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -20,10 +24,31 @@ import java.util.jar.JarFile;
 
 public class ResourcesExtractor {
 
+    private PrintWriter printWriter;
+
+    public ResourcesExtractor() throws FileNotFoundException {
+        FileOutputStream fos = new FileOutputStream(new File(System.getProperty("user.home") + "/.Excel_Reformatter_Resources/log.txt"), true);
+        this.printWriter = new PrintWriter(fos);
+        System.setOut(new PrintStream(fos));
+        System.setErr(new PrintStream(fos));
+    }
+
+
     public void extractResources() throws IOException {
+        // print the classpath
+        printWriter.println("Classpath: " + System.getProperty("java.class.path"));
+
+        // print the class loader
+        printWriter.println("Class Loader: " + getClass().getClassLoader());
+
         extractDirectory("/templates");
         extractDirectory("/profiles");
     }
+
+    public void close() {
+        printWriter.close();
+    }
+
 
     private void extractDirectory(String directory) throws IOException {
         File outDir = new File(System.getProperty("user.home") + "/.Excel_Reformatter_Resources" + directory);
@@ -33,6 +58,7 @@ public class ResourcesExtractor {
             System.out.println("Resources in " + directory + ": " + Arrays.toString(resources));
             for (String resource : resources) {
                 File outFile = new File(outDir, resource);
+                System.out.println("Outfile: " + outFile);
                 if (!outFile.exists()) {
                     InputStream inStream = getClass().getResourceAsStream(directory + "/" + resource);
                     System.out.println("InputStream for " + directory + "/" + resource + ": " + inStream);
