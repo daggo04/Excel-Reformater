@@ -43,7 +43,7 @@ public class ExcelReformatter extends ExcelHandler {
                     ((Double) parameters.get("srcCol")).intValue(),
                     ((Double) parameters.get("dstSheet")).intValue(), 
                     ((Double) parameters.get("dstCol")).intValue(),
-                    ((Double) parameters.get("startRow")).intValue());
+                    1);
                     break;
                 case COPY_SPLIT_ROW:
                 System.out.println("colMap: " + parameters.get("colMap"));
