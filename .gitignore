@@ -1,3 +1,5 @@
+# Maven generated files #
+######################
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -7,19 +9,37 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-
-# https://github.com/takari/maven-wrapper#usage-without-binary-jar
+#https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
 
 ### Testing ###
 test_input/
 test_output/
 
-### VS Code ###
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Visual Studio Code #
+######################
 .vscode/
 
-### MACOS ###
-.DS_Store
+# Python cache files #
+######################
+*.pyc
+
+# Personal #
+############
+# Pastebins
+TMP*
+# Testing files
+Ω*
 
 ### Intellij ###
 .idea/
