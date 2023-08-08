@@ -22,9 +22,7 @@ import java.nio.file.Paths;
 
 /**
  * Created by Dag O.B.H on 2023.18.04.
- * <p>This class is responsible for handling the Excel files.</p>
- * 
- * 
+ * <p>This class is responsible for handling the Excel files and contains methods for formatting and data transfer.</p>
  */
 public class ExcelHandler {
     private Workbook source;
@@ -174,13 +172,7 @@ public class ExcelHandler {
         }
     }
 
-
-
-    
-
-
     //Helper methods
-
     private boolean isRowEmpty(Row row) {
         if (row == null) {
             return true;
@@ -211,18 +203,24 @@ public class ExcelHandler {
 
     private void copyCell(Cell sourceCell, Cell destinationCell) {
         if (sourceCell == null) {
-        // If the source cell is null, set the target cell to blank
             destinationCell.setBlank();
-        return;
-    }
+            return;
+        }
+    
         CellType cellType = sourceCell.getCellType();
-
-
+        
+        Workbook destinationWorkbook = destinationCell.getSheet().getWorkbook();
+        CellStyle newStyle = destinationWorkbook.createCellStyle();
+        newStyle.cloneStyleFrom(sourceCell.getCellStyle());
+        newStyle.setDataFormat(destinationWorkbook.createDataFormat().getFormat(sourceCell.getCellStyle().getDataFormatString()));
+        
+    
         switch (cellType) {
             case STRING:
                 destinationCell.setCellValue(sourceCell.getStringCellValue());
                 break;
             case NUMERIC:
+                destinationCell.setCellStyle(newStyle);
                 if (DateUtil.isCellDateFormatted(sourceCell)) {
                     destinationCell.setCellValue(sourceCell.getDateCellValue());
                 } else {
@@ -230,18 +228,22 @@ public class ExcelHandler {
                 }
                 break;
             case BOOLEAN:
+                destinationCell.setCellStyle(newStyle);
                 destinationCell.setCellValue(sourceCell.getBooleanCellValue());
                 break;
             case FORMULA:
+                destinationCell.setCellStyle(newStyle);
                 destinationCell.setCellFormula(sourceCell.getCellFormula());
                 break;
             case BLANK:
+                destinationCell.setCellStyle(newStyle);
                 destinationCell.setBlank();
                 break;
             default:
                 break;
         }
     }
+    
 
 
     private void copyRow(Row sourceRow, Row destinationRow) {
@@ -290,6 +292,3 @@ public class ExcelHandler {
     }
 
 }
-
-
-

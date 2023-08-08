@@ -319,9 +319,9 @@ public class ProfileManagementPanel extends JPanel {
         int result = JOptionPane.showConfirmDialog(null, panel, "Add Copy Column Operation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
             Map<String, Object> parameters = new HashMap<>();
-            parameters.put("srcSheet", srcSheetField.getText());
+            parameters.put("srcSheet", Double.parseDouble(srcSheetField.getText()));
             parameters.put("srcCol", Double.parseDouble(srcColField.getText()));
-            parameters.put("dstSheet", dstSheetField.getText());
+            parameters.put("dstSheet", Double.parseDouble(dstSheetField.getText()));
             parameters.put("dstCol", Double.parseDouble(dstColField.getText()));
     
             String profileName = (String) profileComboBox.getSelectedItem();
