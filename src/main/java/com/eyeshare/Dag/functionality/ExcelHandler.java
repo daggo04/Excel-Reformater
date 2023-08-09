@@ -50,7 +50,7 @@ public class ExcelHandler {
     public ExcelHandler(String sourceFilePath, String templateFilePath) throws IOException {
         try {
             Path sourcePath = Paths.get(sourceFilePath);
-            Path templatePath = Paths.get(System.getProperty("user.home"), ".Excel_Reformatter_Resources", templateFilePath);
+            Path templatePath = Paths.get(System.getProperty("user.home"), ".excelreformatter", templateFilePath);
 
             this.source = WorkbookFactory.create(Files.newInputStream(sourcePath));
             this.template = WorkbookFactory.create(Files.newInputStream(templatePath));

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * Singleton class
  */
 public class ProfileManager {
-    private static final String APP_DIR = System.getProperty("user.home") + "/.Excel_Reformatter_Resources";
+    private static final String APP_DIR = System.getProperty("user.home") + "/.excelreformatter";
     private static final String PROFILES_DIR = APP_DIR + "/profiles";
     private static final String TEMPLATES_DIR = APP_DIR + "/templates";
     private List<String> profileNames;
